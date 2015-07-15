@@ -1,0 +1,12 @@
+{
+  "laxcomma": true,
+  "quotmark": true,
+  "indent": 2,
+  "newcap": true,
+  "unused": true,
+  "forin": true,
+  "undef": true,
+  "asi": true,
+  "browser": true,
+  "node": true
+}

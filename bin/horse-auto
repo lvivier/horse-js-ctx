@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+
+var horseContext = require('../')
+var fmt = require('util').format
+
+var horse = horseContext()
+
+// TODO handle other events like disconnection
+horse
+  .stream()
+  .on('connect', function(){ console.log('listening for horse tweets') })
+  .on('disconnect', function(){ console.log('disconnected') })
+  .on('tweet', function (tweet) {
+    console.log('horse tweet detected')
+    // find the source after thirty seconds
+    setTimeout(function(){
+      horse.findSource(tweet.text, function(err, res){
+        var tweetText = fmt('%s %s', tweet.text, res.link||'[citation needed]')
+        console.log(tweetText, '\n\n---\n')
+        // TODO actually tweet on behalf of horse_js_ctx
+        horse.twit.post('statuses/update', {status:tweetText}, function(err){
+          if (err) throw err
+        })
+      })
+    }, 30 * 1000)
+  })

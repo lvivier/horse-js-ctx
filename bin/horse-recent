@@ -1,0 +1,33 @@
+#!/usr/bin/env node
+
+var horseContext = require('../')
+var fmt = require('util').format
+var map = require('async').map
+
+var n = process.argv[2] || 10
+var horse = horseContext()
+
+// historical
+
+horse.getRecentTweets(n, function(err, tweets){
+  if (err) throw err
+  map(tweets, eachTweet, logTweets)
+})
+
+function eachTweet (horseTweet, done){
+  horse.findSource(horseTweet.text, function(err, src){
+    if (err) return done(err)
+    if (src) return done(null, {link:src.url, tweet:horseTweet})
+    done(null, {tweet:horseTweet})
+  })
+}
+
+function logTweets(err, arr){
+  if (err) throw err
+  arr.forEach(function(res){
+    var tweetText = fmt('%s %s', res.tweet.text, res.link||'[citation needed]')
+    console.log(tweetText, '\n\n---\n')
+  })
+}
+
+// TODO new tweets
